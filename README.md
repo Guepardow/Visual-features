@@ -90,9 +90,7 @@ Analyze effect of the size on features on a specific dataset :
 
 ## Results
 
-![ranking](./doc/MOT17_ranks.png) ![size](./doc/UAVDT_absolute_size.png) 
-
-
+<img src="./doc/MOT17_ranks.png" alt="ranking" style="zoom:40%;" />  <img src="./doc/UAVDT_absolute_size.png" alt="size" style="zoom:45%;" /> 
 
 ## Citation and acknowledgment
 
