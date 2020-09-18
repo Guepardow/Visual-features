@@ -4,11 +4,8 @@
 
 [[Project page](https://mehdimiah.com/visual_features.html)] [arXiv] [ICPR paper]
 
-<figure class="video_container">
-  <video controls="false" allowfullscreen="true" width="480" height="270" autoplay loop muted markdown="1">
-    <source src="./doc/visual_features.mp4" type="video/mp4">
-  </video>
-</figure>
+![visual_features](./doc/visual_features.png)
+
 
 ## Objective
 
@@ -92,6 +89,10 @@ Analyze effect of the size on features on a specific dataset :
 ``
 
 ## Results
+
+![ranking](./doc/MOT17_ranks.png) ![size](./doc/UAVDT_absolute_size.png) 
+
+
 
 ## Citation and acknowledgment
 
