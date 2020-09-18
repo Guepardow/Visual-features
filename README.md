@@ -74,7 +74,7 @@ The weights for vehicles ReID come from [AIC2018_iamai](https://github.com/cw120
 Compute the mean average precision on a specific scene with a chosen features and sigma : 
 
 ``
-python main.py --dataset="DETRAC" --scene="20011" --features="resnet18" --sigma=10
+python main.py --dataset="DETRAC" --scene="20011" --feature="resnet18" --sigma=10
 ``
 
 Analyze the ranking of features on a specific dataset  :
@@ -85,12 +85,12 @@ python analysis_rank.py --dataset="DETRAC"
 
 Analyze effect of the size on features on a specific dataset :
 
-``analysis_size.py --dataset="DETRAC"
+``python analysis_size.py --dataset="DETRAC"
 ``
 
 ## Results
 
-<img src="./doc/MOT17_ranks.png" alt="ranking" style="zoom:40%;" />  <img src="./doc/UAVDT_absolute_size.png" alt="size" style="zoom:45%;" /> 
+<img src="./doc/MOT17_ranks.png" width="580" />     <img src="./doc/UAVDT_absolute_size.png" width="350" /> 
 
 ## Citation and acknowledgment
 
