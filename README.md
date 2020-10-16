@@ -1,8 +1,8 @@
 # An Empirical Analysis of Visual Features for Multiple Object Tracking in Urban Scenes
-**Authors : Mehdi Miah, Justine Pépin, Nicolas Saunier & Guillaume-Alexandre Bilodeau** <br>
+**Authors : Mehdi Miah, Justine Pepin, Nicolas Saunier & Guillaume-Alexandre Bilodeau** <br>
 *Polytechnique Montréal - 2020*
 
-[[Project page](https://mehdimiah.com/visual_features.html)] [arXiv] [ICPR paper]
+[[Project page](https://mehdimiah.com/visual_features.html)] [[arXiv paper](http://arxiv.org/abs/2010.07881)] [ICPR 2020 paper]
 
 ![visual_features](./doc/visual_features.png)
 
@@ -20,7 +20,7 @@ Linux and Windows supported. Python 3.6, Pytorch 1.4, CUDA 10.0
 ### Clone repositories
 
 ``cd src`` <br>
-``git clone https://github.com/KaiyangZhou/deep-person-reid.git (torchreid 1.2.7)`` <br>
+``git clone https://github.com/KaiyangZhou/deep-person-reid.git #(torchreid 1.2.7)`` <br>
 ``mv deep-person-reid/ deep_person_reid/`` <br>
 ``pip install efficientnet_pytorch`` <br>
 ``git clone https://github.com/cw1204772/AIC2018_iamai.git``
@@ -48,26 +48,31 @@ The weights for vehicles ReID come from [AIC2018_iamai](https://github.com/cw120
 
 ### Final structure of files
 
+<details>
+  <summary>Expand tree structure</summary>
+  
 ```bash
 .
 ├─── doc
 ├─── results
 │   ├─── figure
-|   ├─── logs
+│   ├─── logs
 ├─── src
-|   ├─── affinity.py
-|   ├─── analysis_rank.py
-|   ├─── analysis_size.py
-|   ├─── appearances.py
-|   ├─── dataset.py
-|   ├─── main.py
-|   ├─── utils.py
-|   ├─── AIC2018_iamai
-|   ├─── deep_person_reid
+│   ├─── affinity.py
+│   ├─── analysis_rank.py
+│   ├─── analysis_size.py
+│   ├─── appearances.py
+│   ├─── dataset.py
+│   ├─── main.py
+│   ├─── utils.py
+│   ├─── AIC2018_iamai
+│   ├─── deep_person_reid
 ├─── weights
-|   ├─── model_880_base.ckpt
-|   ├─── osnet_ain_x1_0_market1501_256x128_amsgrad_ep100_lr0.0015_coslr_b64_fb10_softmax_labsmth_flip_jitter.pth
+│   ├─── model_880_base.ckpt
+│   ├─── osnet_ain_x1_0_market1501_256x128_amsgrad_ep100_lr0.0015_coslr_b64_fb10_softmax_labsmth_flip_jitter.pth
 ```
+  
+</details>
 
 ## Run experiments
 
@@ -99,7 +104,7 @@ If you refer to this work, please cite :
 ```bibtex
 @inproceedings{miah2020empirical,
     title = {An {Empirical} {Analysis} of {Visual} {Features} for {Multiple} {Object} {Tracking} in {Urban} {Scenes}},
-    author = {Miah, Mehdi and Pépin, Justine and Saunier, Nicolas and Bilodeau, Guillaume-Alexandre},
+    author = {Miah, Mehdi and Pepin, Justine and Saunier, Nicolas and Bilodeau, Guillaume-Alexandre},
     booktitle = {International {Conference} on {Pattern} {Recognition} ({ICPR})},
     year = {2020}
 }
