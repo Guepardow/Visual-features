@@ -87,15 +87,19 @@ class BoundingBoxes:
         """
 
         if self.dataset == 'WildTrack':
-            return open_frame_WildTrack(scene, frame)
+            image = open_frame_WildTrack(scene, frame)
         elif self.dataset == 'DETRAC':
-            return open_frame_DETRAC(scene, frame)
+            image = open_frame_DETRAC(scene, frame)
         elif self.dataset == 'MOT17':
-            return open_frame_MOT17(scene, frame)
+            image = open_frame_MOT17(scene, frame)
         elif self.dataset == 'UAVDT':
-            return open_frame_UAVDT(scene, frame)
+            image = open_frame_UAVDT(scene, frame)
         else:
             raise ValueError(f"Dataset {self.dataset} is not recognized !")
+
+        assert image is not None, f"Cannot open the frame {frame} from the scene : check the path to the images."
+
+        return image
 
     def _compute_area(self):
 
