@@ -57,6 +57,11 @@ The weights for vehicles ReID come from [AIC2018_iamai](https://github.com/cw120
 ├─── results
 │   ├─── figure
 │   ├─── logs
+├─── script
+│   ├─── run_DETRAC.sh
+│   ├─── run_MOT17.sh
+│   ├─── run_UAVDT.sh
+│   ├─── run_WildTrack.sh
 ├─── src
 │   ├─── affinity.py
 │   ├─── analysis_rank.py
@@ -80,6 +85,12 @@ Compute the mean average precision on a specific scene with a chosen features an
 
 ``
 python main.py --dataset=DETRAC --scene=20011 --feature=resnet18 --sigma=10
+``
+
+Compute the mean average precision on a whole dataset : 
+
+``
+cd src ; bash ../script/run_DETRAC.sh
 ``
 
 Analyze the ranking of features on a specific dataset  :

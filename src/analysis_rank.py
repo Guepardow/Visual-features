@@ -17,7 +17,7 @@ PATH_FIGURE = '../results/figure'
 my_colors = {
     'colors':         '#000000',  # black
     'bw':             '#777777',  # grey
-    'hog':            '#984EA3',  # purple'
+    'hog':            '#984EA3',  # purple
     'vgg19':          '#FF7F00',  # orange
     'resnet18':       '#E41A1C',  # red
     'densenet121':    '#4DAF4A',  # green
@@ -27,23 +27,24 @@ my_colors = {
 }
 
 dict_feature = {
-    'bw': 'GR',
-    'colors': 'RGB',
-    'hog': 'HOG',
-    'vgg19': 'VGG',
-    'resnet18': 'RSN',
-    'densenet121': 'DNS',
+    'bw':             'GR',
+    'colors':         'RGB',
+    'hog':            'HOG',
+    'vgg19':          'VGG',
+    'resnet18':       'RSN',
+    'densenet121':    'DNS',
     'efficientnetB0': 'EFF',
     'osnetAINMarket': 'OSN',
-    'vehReid': 'VID'
+    'vehReid':        'VID'
 }
 
 dict_affinity = {
-    'manhattan': 'L1',
-    'euclidean': 'L2',
-    'rank1': 'R1',
+    'manhattan':     'L1',
+    'euclidean':     'L2',
+    'rank1':         'R1',
     'bhattacharyya': 'B',
-    'cosine': 'C'}
+    'cosine':        'C'
+}
 
 if __name__ == '__main__':
 
@@ -56,37 +57,28 @@ if __name__ == '__main__':
     df_logs = pd.read_csv(os.path.join(PATH_LOGS, 'macro_logs.csv'), dtype={'scene':str})
 
     # Parameters
-    N = 5
+    N = 5  # minimal number of barplots
     list_sigma = [0, 0.05, 0.10, 0.20]
     list_step = [1, 2, 4, 8, 16, 32]
 
     n_sigma = len(list_sigma)
     n_step = len(list_step)
 
-    # Filter on the dataset and the classes
+    # Filter on the dataset, the classes and the affinities
     df_logs = df_logs[(df_logs['dataset'] == args.dataset)]
     df_logs = df_logs.loc[(df_logs['sigma'].isin(list_sigma)) & (df_logs['step'].isin(list_step))]
     df_logs = df_logs.loc[df_logs['affinity'].isin(list(dict_affinity.keys()))]
-
-    # Index reset
     df_logs = df_logs.reset_index(drop=True)
 
     # Number of scenes
-    print(f"Number of scenes : {len(np.unique(df_logs['scene']))}")
+    n_scenes = len(np.unique(df_logs['scene']))
+    print(f"Number of scenes : {n_scenes}")
+    assert n_scenes != 0, f"Run main.py on the dataset {args.dataset} to get some data"
 
-    # mAP over scenes
-    df_ranks = df_logs.groupby(['sigma', "step", 'feature', 'affinity'])['precision'].agg(['mean']).rename(columns={"mean": "precision"})
+    # mAP over scenes and ranking
+    df_ranks = df_logs.groupby(['sigma', 'step', 'feature', 'affinity'])['precision'].agg(['mean']).rename(columns={"mean": "precision"})
     df_ranks = df_ranks.reset_index()
     df_ranks['name'] = df_ranks['feature'].map(dict_feature) + '-' + df_ranks['affinity'].map(dict_affinity)
-
-    idx = df_ranks.groupby(['sigma', 'step'])['precision'].transform(max) == df_ranks['precision']
-    df_best_idx = df_ranks[idx]
-    df_best_idx = df_best_idx.reset_index()
-
-    print(df_best_idx)
-
-    df_best_pivot = df_best_idx.pivot(index='sigma', columns='step', values='name')
-
     df_ranks['rank'] = df_ranks.groupby(["sigma", 'step'])['precision'].rank(ascending=False)
 
     fig, axs = plt.subplots(n_sigma, n_step, figsize=(14, 8))
@@ -98,68 +90,71 @@ if __name__ == '__main__':
 
             # Filter on this specific case sigma-step
             df_case = df_ranks.loc[(df_ranks['sigma'] == list_sigma[idx]) & (df_ranks['step'] == list_step[idy])]
-            df_case = df_case.loc[df_case['feature'] != 'osnetAIN']
 
             # Take the N best pairs feature-affinity
-            df_topN = df_case.loc[df_ranks['rank'] <= N]
+            df_best = df_case.loc[df_ranks['rank'] <= N]
 
-            # Only the top5
-            df = df_topN
+            # If none of colors or bw is in the N best, we add the best one among them (same for HOG, CNN-based and ReID models)
 
-            # If any of colors or bw is on topN, we plot the N top + 1
-            if ('bw' not in df_topN['feature'].values) & ('colors' not in df_topN['feature'].values):
+            if ('bw' not in df_best['feature'].values) & ('colors' not in df_best['feature'].values):
 
                 # Find the best color or bw
                 df_best_histo = df_case.loc[df_case['feature'].isin(['colors', 'bw'])].nlargest(1, 'precision')
-                df = pd.concat([df, df_best_histo])
+                df_best = pd.concat([df_best, df_best_histo])
 
-            if 'hog' not in df_topN['feature'].values:
+            if 'hog' not in df_best['feature'].values:
 
                 # Find the best hog
                 df_best_hog = df_case.loc[df_case['feature'].isin(['hog'])].nlargest(1, 'precision')
-                df = pd.concat([df, df_best_hog])
+                df_best = pd.concat([df_best, df_best_hog])
 
-            if ('vgg19' not in df_topN['feature'].values) & ('resnet18' not in df_topN['feature'].values) & ('densenet121' not in df_topN['feature'].values) & ('efficientnetB0' not in df_topN['feature'].values):
+            if ('vgg19' not in df_best['feature'].values) & ('resnet18' not in df_best['feature'].values) & ('densenet121' not in df_best['feature'].values) & ('efficientnetB0' not in df_best['feature'].values):
 
                 # Find the best cnn-based model
                 df_best_cnn = df_case.loc[df_case['feature'].isin(['vgg19', 'resnet18', 'densenet121', 'efficientnetB0'])].nlargest(1, 'precision')
-                df = pd.concat([df, df_best_cnn])
+                df_best = pd.concat([df_best, df_best_cnn])
 
-            if 'osnetAINMarket' not in df_topN['feature'].values:
+            if (args.dataset in ['MOT17', 'WildTrack']) and ('osnetAINMarket' not in df_best['feature'].values):
 
-                # Find the results from ReID OSNet-AIN
+                # Find the results from ReID osnetAINMarket
                 df_best_osnet = df_case.loc[df_case['feature'].isin(['osnetAINMarket'])].nlargest(1, 'precision')
-                df = pd.concat([df, df_best_osnet])
+                df_best = pd.concat([df_best, df_best_osnet])
 
-            df = df.sort_values('precision', ascending=True).reset_index(drop=True)
+            if (args.dataset in ['DETRAC', 'UAVDT']) and ('vehReid' not in df_best['feature'].values):
 
-            n_bars = df.shape[0]  # number of bars : 5, 6 or 7
-            df.plot.barh(ax=axs[idx, idy], y='precision', x='name', alpha=0.99,
-                         legend=None, color=[my_colors.get(x) for x in df['feature']])
+                # Find the results from ReID vehReid
+                df_best_vehreid = df_case.loc[df_case['feature'].isin(['vehReid'])].nlargest(1, 'precision')
+                df_best = pd.concat([df_best, df_best_vehreid])
+
+            df_best = df_best.sort_values('precision', ascending=True).reset_index(drop=True)
+
+            n_bars = df_best.shape[0]  # number of bars : 5 or more
+            df_best.plot.barh(ax=axs[idx, idy], y='precision', x='name', alpha=0.99,
+                              legend=None, color=[my_colors.get(x) for x in df_best['feature']])
 
             # Bug of matplotlib under Linux : hatches are not displayed after pdf rendering
             # Solution : use alpha=0.99 (https://stackoverflow.com/questions/5195466)
 
-            print(df)
+            print(df_best)
 
             for i, bar in enumerate(axs[idx, idy].patches):
-                if df.loc[i, 'affinity'] == 'manhattan':
+                if df_best.loc[i, 'affinity'] == 'manhattan':
                     bar.set_hatch("\\\\\\")
-                elif df.loc[i, 'affinity'] == 'euclidean':
+                elif df_best.loc[i, 'affinity'] == 'euclidean':
                     bar.set_hatch('///')
-                elif df.loc[i, 'affinity'] == 'bhattacharyya':
+                elif df_best.loc[i, 'affinity'] == 'bhattacharyya':
                     bar.set_hatch('XXX')
-                elif df.loc[i, 'affinity'] == 'rank1':
+                elif df_best.loc[i, 'affinity'] == 'rank1':
                     bar.set_hatch('OO')
-                elif df.loc[i, 'affinity'] == 'dotProduct':
+                elif df_best.loc[i, 'affinity'] == 'dotProduct':
                     bar.set_hatch('|||')
 
-            # Add position of the 6th bar if it exists
+            # Add position of the +6th bar if necessary
             y_pos = -0.25
             for i, bar in enumerate(axs[idx, idy].patches):
-                rank = df.loc[i, 'rank']
-                if rank > N:  # it is the additional one
-                    precision = df.loc[i, 'precision']
+                rank = df_best.loc[i, 'rank']
+                if rank > N:  # it is an additional one
+                    precision = df_best.loc[i, 'precision']
                     if (rank > 20) and (rank % 10 == 1):
                         axs[idx, idy].text(precision+5, y_pos, f"{rank:.0f}"r'$^{st}$', fontweight='bold')
                     elif (rank > 20) and (rank % 10 == 2):
@@ -168,9 +163,8 @@ if __name__ == '__main__':
                         axs[idx, idy].text(precision+5, y_pos, f"{rank:.0f}"r'$^{rd}$', fontweight='bold')
                     else:
                         axs[idx, idy].text(precision+5, y_pos, f"{rank:.0f}"r'$^{th}$', fontweight='bold')
-                    y_pos += 1  # if 7 bars
+                    y_pos += 1
 
-            # axs[idx, idy].set_yticklabels([]) #remove names of bars : VGG-L2
             axs[idx, idy].yaxis.set_label_text("")  # remove axis name
             axs[idx, idy].tick_params(axis="y", labelsize=9)
             axs[idx, idy].set(xlim=(0, 125))
