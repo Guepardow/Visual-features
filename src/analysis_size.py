@@ -11,7 +11,6 @@ PATH_LOGS = '../results/logs'
 PATH_FIGURE = '../results/figure'
 
 # Parameters
-classes = 'all'
 affinity = 'euclidean'
 sigma, step = 0.2, 32
 
@@ -61,7 +60,7 @@ if __name__ == '__main__':
     for scene in tqdm(list_scene):
         for feature in list_features:
 
-            df_logs = pd.read_csv(os.path.join(PATH_LOGS, args.dataset, scene, 'all', affinity, f'logs_{feature}_{step}_{sigma:.1f}.csv'))
+            df_logs = pd.read_csv(os.path.join(PATH_LOGS, args.dataset, scene, affinity, f'logs_{feature}_{step}_{sigma:.1f}.csv'))
             df_logs['isCorrect'] = 100 * (df_logs['objectID1'] == df_logs['objectID2']).astype(int)
             df_logs['scene'] = scene
             df_logs['feature'] = feature
